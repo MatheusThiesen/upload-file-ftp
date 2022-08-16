@@ -62,7 +62,7 @@ async function exec(type: "all" | "split", timeSplit: number) {
       console.log(
         `[ANDAMENTO] ${contEdit} DE ${
           uploadFiles.length
-        } arquivos enviados   Data ${new Date().getDate()}/${
+        } arquivos (${file}) enviados Data ${new Date().getDate()}/${
           new Date().getMonth() + 1
         }/${new Date().getFullYear()} - ${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}`
       );
