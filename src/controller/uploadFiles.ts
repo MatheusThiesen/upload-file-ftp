@@ -68,7 +68,11 @@ async function exec(type: "all" | "split", timeSplit: number) {
       );
     }
 
-    console.log(`[FIM] Sincronização por FTP, total de ${contEdit} arquivos`);
+    console.log(
+      `[FIM] Sincronização por FTP, total de ${contEdit} arquivos  Data ${new Date().getDate()}/${
+        new Date().getMonth() + 1
+      }/${new Date().getFullYear()} - ${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}`
+    );
   });
 }
 
