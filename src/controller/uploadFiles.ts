@@ -1,19 +1,19 @@
-import FTPClient from "../service/FTPClient";
 import fs from "fs";
 import path from "path";
+import FTPClient from "../service/FTPClient";
 
 const path_source = process.env.PATH_SOURCE || "";
 const path_remote = process.env.PATH_REMOTE || "";
 
 const ftp = new FTPClient({
-  host: process.env.FTP_HOST,
-  username: process.env.FTP_USERNAME,
-  password: process.env.FTP_PASSWORD,
-  port: Number(process.env.FTP_PORT),
+  host: process.env.FTP_ALPARHUB_HOST,
+  username: process.env.FTP_ALPARHUB_USERNAME,
+  password: process.env.FTP_ALPARHUB_PASSWORD,
+  port: Number(process.env.FTP_ALPARHUB_PORT),
   secure: false,
 });
 
-async function exec(type: "all" | "split") {
+async function exec(type: "all" | "split", timeSplit: number) {
   //Lista todos arquivos da pasta
   fs.readdir(path.resolve(path_source), async (err, files) => {
     var contEdit = 0;
@@ -31,11 +31,16 @@ async function exec(type: "all" | "split") {
     for (const file of files) {
       if (type === "split") {
         var now: Date = new Date();
-        now.setDate(now.getDate() - 1);
+        now.setMinutes(now.getMinutes() - timeSplit);
 
         //informações do arquivo
         const statFile = fs.statSync(path.resolve(path_source, file));
-        if (new Date(statFile.mtime) > now) {
+        if (
+          now <= new Date(statFile.mtime) ||
+          now <= new Date(statFile.ctime) ||
+          now <= new Date(statFile.birthtime) ||
+          now <= new Date(statFile.atime)
+        ) {
           await ftp.upload(
             path.resolve(path_source, file),
             `/${path_remote}/${file}`

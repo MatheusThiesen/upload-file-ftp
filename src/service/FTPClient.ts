@@ -17,7 +17,7 @@ class FTPClient {
     password = "guest",
     secure = false,
   }) {
-    this.client = new ftp.Client();
+    this.client = new ftp.Client(0);
     this.settings = {
       host: host,
       port: port,

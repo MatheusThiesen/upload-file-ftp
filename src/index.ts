@@ -1,13 +1,18 @@
 import "dotenv/config";
-import uploadFiles from "./controller/uploadFiles";
 import cron from "node-cron";
+// import copyFiles from "./controller/copyFiles";
+import uploadFiles from "./controller/uploadFiles";
 
 (async () => {
-  await uploadFiles("split");
+  await uploadFiles(
+    "split",
+    1 * 60 * 24 * 300 //300 dia
+  );
+  // await copyFiles();
 })();
 
 cron.schedule(
-  "0 0 0 * * *",
+  "0 0 */5 * * *",
   async () => {
     try {
       console.log(
@@ -16,7 +21,8 @@ cron.schedule(
         }/${new Date().getFullYear()} - ${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}`
       );
 
-      await uploadFiles("split");
+      await uploadFiles("split", 5);
+      // await copyFiles();
     } catch (error) {
       console.log(
         `[ERRO][SINC-DIARIO] Data ${new Date().getDate()}/${
