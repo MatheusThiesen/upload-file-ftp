@@ -28,6 +28,9 @@ async function exec(type: "all" | "split", timeSplit: number) {
     );
 
     //Percorre todos os arquivos
+
+    var uploadFiles: string[] = [];
+
     for (const file of files) {
       if (type === "split") {
         var now: Date = new Date();
@@ -41,27 +44,31 @@ async function exec(type: "all" | "split", timeSplit: number) {
           now <= new Date(statFile.birthtime) ||
           now <= new Date(statFile.atime)
         ) {
-          await ftp.upload(
-            path.resolve(path_source, file),
-            `/${path_remote}/${file}`
-          );
-
-          contEdit += 1;
+          uploadFiles.push(file);
         }
       } else {
-        await ftp.upload(
-          path.resolve(path_source, file),
-          `/${path_remote}/${file}`
-        );
-        contEdit += 1;
+        uploadFiles.push(file);
       }
     }
 
-    console.log(
-      `[FIM] Sincronização por FTP, total de ${contEdit} arquivos  Data ${new Date().getDate()}/${
-        new Date().getMonth() + 1
-      }/${new Date().getFullYear()} - ${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}`
-    );
+    for (const file of uploadFiles) {
+      await ftp.upload(
+        path.resolve(path_source, file),
+        `/${path_remote}/${file}`
+      );
+
+      contEdit += 1;
+
+      console.log(
+        `[ANDAMENTO] ${contEdit} DE ${
+          uploadFiles.length
+        } arquivos enviados   Data ${new Date().getDate()}/${
+          new Date().getMonth() + 1
+        }/${new Date().getFullYear()} - ${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}`
+      );
+    }
+
+    console.log(`[FIM] Sincronização por FTP, total de ${contEdit} arquivos`);
   });
 }
 
