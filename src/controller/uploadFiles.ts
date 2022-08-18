@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import sharp from "sharp";
 import FTPClient from "../service/FTPClient";
 
 const path_source = process.env.PATH_SOURCE || "";
@@ -12,6 +13,16 @@ const ftp = new FTPClient({
   port: Number(process.env.FTP_ALPARHUB_PORT),
   secure: false,
 });
+
+async function read(importPath: string, file: string): Promise<string> {
+  const tratedFilePath = path.resolve(__dirname, "..", "..", "temp", file);
+
+  await sharp(path.resolve(importPath, file))
+    .jpeg({ quality: 50, progressive: true })
+    .toFile(tratedFilePath);
+
+  return tratedFilePath;
+}
 
 async function exec(type: "all" | "split", timeSplit: number) {
   //Lista todos arquivos da pasta
@@ -52,10 +63,11 @@ async function exec(type: "all" | "split", timeSplit: number) {
     }
 
     for (const file of uploadFiles) {
-      await ftp.upload(
-        path.resolve(path_source, file),
-        `/${path_remote}/${file}`
-      );
+      const pathFile = await read(path_source, file);
+
+      await ftp.upload(pathFile, `/${path_remote}/${file}`);
+
+      await fs.promises.unlink(path.resolve(pathFile));
 
       contEdit += 1;
 
